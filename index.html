@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heinrich's Trustrworthy Bank Ltding Simulator</title>
+  <style>
+    /* RESET & CORE BASE STYLES */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: screen;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #1f2937;
+    }
+
+    /* GLOBAL TOP BAR HEADER */
+    #global-header {
+      background-color: #2563eb;
+      color: #ffffff;
+      padding: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .header-container {
+      max-w: 72rem;
+      max-width: 1152px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .header-container {
+        flex-direction: row;
+      }
+    }
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .right-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+      width: 100%;
+    }
+    @media (min-width: 640px) {
+      .right-cluster {
+        width: auto;
+      }
+    }
+
+    /* BALANCES DISPLAY BLOCKS */
+    .balance-wrapper {
+      background-color: #1d4ed8;
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .filter-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-w: 110px;
+      min-width: 110px;
+    }
+    .filter-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #bfdbfe;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+    #visibility-filter {
+      background-color: #1d4ed8;
+      color: #ffffff;
+      border: 1px solid #3b82f6;
+      border-radius: 0.25rem;
+      padding: 0.25rem;
+      font-size: 0.75rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* MAIN CONTAINER INTERFACES */
+    main {
+      flex-grow: 1;
+      max-width: 1152px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* BUTTON PRIMITIVES */
+    #logout-btn {
+      background-color: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      transition: background-color 0.2s;
+      cursor: pointer;
+      margin-left: 0.5rem;
+    }
+    #logout-btn:hover {
+      background-color: #dc2626;
+    }
+    .primary-btn {
+      width: 100%;
+      color: white;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      border: none;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+    .back-to-home-btn {
+      background: none;
+      border: none;
+      font-size: 0.875rem;
+      color: #2563eb;
+      cursor: pointer;
+      text-align: left;
+      margin-top: 1rem;
+      display: block;
+    }
+    .back-to-home-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* INPUT FIELDS */
+    .field-group {
+      margin-bottom: 1rem;
+    }
+    .field-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin-bottom: 0.25rem;
+    }
+    .text-input {
+      width: 100%;
+      border: 2px solid #e5e7eb;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .text-input:focus {
+      border-color: #2563eb;
+    }
+
+    /* 1. MULTI-USER LOGIN SCREEN */
+    #login-screen {
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      max-width: 28rem;
+      width: 100%;
+      margin: 0 auto;
+      border: 1px solid #f3f4f6;
+    }
+    .login-heading {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .login-heading h2 {
+      font-size: 1.875rem;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+    .login-heading p {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    #login-btn {
+      background-color: #2563eb;
+    }
+    #login-btn:hover {
+      background-color: #1d4ed8;
+    }
+    #login-error {
+      color: #ef4444;
+      font-size: 0.875rem;
+      text-align: center;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    /* 2. HOME SCREEN DASHBOARD PANELS */
+    #home-screen {
+      max-width: 64rem;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .dashboard-banner {
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .dashboard-banner h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+    }
+    .dashboard-banner p {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .grid-container { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .grid-container { grid-template-columns: repeat(4, 1fr); }
+    }
+    .nav-card {
+      background-color: #ffffff;
+      padding: 1.25rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid #e5e7eb;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .nav-card:hover {
+      border-color: #2563eb;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    #nav-terms-btn {
+      border: 1px solid #bfdbfe;
+      box-shadow: 0 0 0 4px #eff6ff;
+    }
+    .card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1f2937;
+    }
+    .nav-card:hover .card-title {
+      color: #2563eb;
+    }
+    .card-desc {
+      color: #6b7280;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    /* TRANSACTION HISTORY TABLE */
+    .ledger-container {
+      background-color: #ffffff;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid #e5e7eb;
+    }
+    .ledger-container h3 {
+      font-weight: 700;
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      text-align: left;
+      border-collapse: collapse;
+    }
+    th {
+      background-color: #f9fafb;
+      color: #4b5563;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    td {
+      padding: 0.75rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .text-positive { color: #16a34a; font-weight: 700; }
+    .text-negative { color: #dc2626; font-weight: 700; }
+
+    /* ACTION PANEL STRUCTURES */
+    .action-panel {
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      width: 100%;
+      border: 1px solid #f3f4f6;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    @media (min-width: 768px) {
+      .action-panel {
+        flex-direction: row;
+      }
+    }
+    .panel-info {
+      width: 100%;
+    }
+    @media (min-width: 768px) {
+      .panel-info { width: 33.333%; }
+    }
+    .panel-info h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .panel-info p {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+    .panel-form {
+      width: 100%;
+      background-color: #f9fafb;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      position: relative;
+    }
+    @media (min-width: 768px) {
+      .panel-form { width: 66.666%; }
+    }
+
+    /* ACTION SPECIFIC ELEMENTS */
+    #execute-transfer-btn { background-color: #2563eb; }
+    #execute-transfer-btn:hover { background-color: #1d4ed8; }
+    #execute-pay-btn { background-color: #16a34a; }
+    #execute-pay-btn:hover { background-color: #15803d; }
+    #execute-loan-btn { background-color: #eab308; margin-top: 1rem; }
+    #execute-loan-btn:hover { background-color: #ca8a04; }
+
+    /* ASYNC ENGINE SPINNERS */
+    .loading-spinner {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+    }
+    .spinner-icon {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid currentColor;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      animation: spin 1s linear infinite;
+      margin-bottom: 0.5rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* RESPONSE BADGES */
+    .status-badge {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid transparent;
+      margin-top: 1rem;
+    }
+    .status-error { background-color: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .status-success { background-color: #f0fdf4; border-color: #bbf7d0; color: #16a34a; }
+    .status-blue { background-color: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .status-yellow { background-color: #fef9c3; border-color: #fef08a; color: #a16207; }
+
+    /* LEGAL TERMS REGULATORY COMPLIANCE CONTAINER */
+    .terms-scrollbox {
+      border: 1px solid #d1d5db;
+      background-color: #ffffff;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    #terms-scroll-container {
+      height: 16rem;
+      overflow-y: scroll;
+      border: 1px solid #e5e7eb;
+      padding: 1rem;
+      font-size: 0.75rem;
+      color: #6b7280;
+      background-color: #f9fafb;
+      border-radius: 0.25rem;
+    }
+    .terms-section-title {
+      font-weight: 700;
+      color: #374151;
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    #close-terms-btn {
+      background-color: #2563eb;
+      margin-top: 1rem;
+    }
+    #close-terms-btn:hover {
+      background-color: #1d4ed8;
+    }
+    .loan-rule { font-size: 0.75rem; color: #ef4444; font-style: italic; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <header id="global-header" style="display: none;">
+    <div class="header-container">
+      <h1 class="header-title">🏦 Heinrich's Trustrworthy Bank Ltd</h1>
+      
+      <div class="right-cluster">
+        <div id="checking-wrapper" class="balance-wrapper">
+          <span>Checking:</span>
+          <span id="checking-display">$0</span>
+        </div>
+        <div id="savings-wrapper" class="balance-wrapper">
+          <span>Savings:</span>
+          <span id="savings-display">$0</span>
+        </div>
+        
+        <div class="filter-wrapper">
+          <label class="filter-label">Display Option</label>
+          <select id="visibility-filter">
+            <option value="both">Show both</option>
+            <option value="checking">Only Checking</option>
+            <option value="savings">Only Savings</option>
+            <option value="none">Show none</option>
+          </select>
+        </div>
+
+        <button id="logout-btn">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+    <div id="login-screen">
+      <div class="login-heading">
+        <h2>Welcome Back</h2>
+        <p>Enter your credentials to access your portal</p>
+      </div>
+      <div>
+        <div class="field-group">
+          <label class="field-label">Username</label>
+          <input type="text" id="username" placeholder="e.g. jdoe" class="text-input">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <input type="password" id="password" placeholder="••••••••" class="text-input">
+        </div>
+        <button id="login-btn" class="primary-btn">Sign In</button>
+        <p id="login-error" style="display: none;">❌ Invalid credentials for selected profile!</p>
+      </div>
+    </div>
+
+    <div id="home-screen" style="display: none;">
+      <div class="dashboard-banner">
+        <h2 id="welcome-message">Hi, User</h2>
+        <p>Select an action below to manage your funds.</p>
+      </div>
+      
+      <div class="grid-container">
+        <button id="nav-transfer-btn" class="nav-card">
+          <div class="card-icon">🔄</div>
+          <h3 class="card-title">Internal Transfer</h3>
+          <p class="card-desc">Move money instantly between accounts.</p>
+        </button>
+
+        <button id="nav-pay-btn" class="nav-card">
+          <div class="card-icon">👤</div>
+          <h3 class="card-title">Pay Anyone</h3>
+          <p class="card-desc">Add a third-party beneficiary and send funds.</p>
+        </button>
+
+        <button id="nav-loan-btn" class="nav-card">
+          <div class="card-icon">💰</div>
+          <h3 class="card-title">Apply for a Loan</h3>
+          <p class="card-desc">Request an instant injection of $5,000 cash.</p>
+        </button>
+
+        <button id="nav-terms-btn" class="nav-card">
+          <div class="card-icon">📋</div>
+          <h3 class="card-title">Regulatory Terms</h3>
+          <p class="card-desc">Review legal agreement frameworks and protocols.</p>
+        </button>
+      </div>
+
+      <div class="ledger-container">
+        <h3>📜 Recent Transaction Ledger</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-body">
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="transfer-screen" class="action-panel" style="display: none;">
+      <div class="panel-info">
+        <h3>🔄 Internal Transfer</h3>
+        <p>Select the routing direction and specify the amount you want to move.</p>
+        <button class="back-to-home-btn">← Back to Dashboard</button>
+      </div>
+      <div class="panel-form">
+        <div id="transfer-spinner" class="loading-spinner" style="display:none; color:#2563eb;">
+          <div class="spinner-icon"></div>
+          Contacting Core Bank Server...
+        </div>
+        <div class="field-group">
+          <label class="field-label">Direction</label>
+          <select id="transfer-direction" class="text-input" style="background-color: white;">
+            <option value="c-to-s">Checking to Savings</option>
+            <option value="s-to-c">Savings to Checking</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Amount ($)</label>
+          <input type="number" id="transfer-amount" placeholder="0.00" class="text-input">
+        </div>
+        <button id="execute-transfer-btn" class="primary-btn">Confirm Transfer</button>
+        <div id="transfer-status" class="status-badge" style="display: none;"></div>
+      </div>
+    </div>
+
+    <div id="pay-screen" class="action-panel" style="display: none;">
+      <div class="panel-info">
+        <h3>👤 Pay Anyone</h3>
+        <p>Transfer external funds instantly to a third-party beneficiary by adding their details.</p>
+        <button class="back-to-home-btn">← Back to Dashboard</button>
+      </div>
+      <div class="panel-form">
+        <div id="pay-spinner" class="loading-spinner" style="display:none; color:#16a34a;">
+          <div class="spinner-icon"></div>
+          Processing Anti-Fraud Check...
+        </div>
+        <div class="field-group">
+          <label class="field-label">Beneficiary Name</label>
+          <input type="text" id="ben-name" placeholder="John Doe" class="text-input">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Amount ($)</label>
+          <input type="number" id="ben-amount" placeholder="0.00" class="text-input">
+        </div>
+        <button id="execute-pay-btn" class="primary-btn">Add & Pay Beneficiary</button>
+        <div id="payment-status" class="status-badge" style="display: none;"></div>
+      </div>
+    </div>
+
+    <div id="loan-screen" class="action-panel" style="display: none;">
+      <div class="panel-info">
+        <h3>💰 Instant Loan</h3>
+        <p>Need quick funding? Click approval to get a secure line injection credit.</p>
+        <button class="back-to-home-btn">← Back to Dashboard</button>
+      </div>
+      <div class="panel-form">
+        <div id="loan-spinner" class="loading-spinner" style="display:none; color:#eab308;">
+          <div class="spinner-icon"></div>
+          Running Credit Underwriting...
+        </div>
+        <p style="margin-bottom: 0.5rem; font-weight: 500;">Request an instant injection of <strong>$5,000</strong> directly into your Checking account balance.</p>
+        <p class="loan-rule">*Rule: Total liquidity across all accounts (Checking + Savings) must not exceed $15,000 to qualify.</p>
+        
+        <button id="execute-loan-btn" class="primary-btn">Approve & Deposit $5,000</button>
+        <div id="loan-status" class="status-badge" style="display: none;"></div>
+      </div>
+    </div>
+
+    <div id="terms-screen" class="action-panel" style="display: none;">
+      <div class="panel-info">
+        <h3>📋 System Terms</h3>
+        <p>Please completely review our background regulatory platform conditions file.</p>
+      </div>
+      <div class="panel-form" style="background-color: #f9fafb;">
+        <div class="terms-scrollbox">
+          <div id="terms-scroll-container">
+            <p class="terms-section-title">Section 1.1: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.2: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.3: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.4: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.5: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.6: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.7: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.8: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.9: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <p class="terms-section-title">Section 1.10: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+
+            <p class="terms-section-title">Section 1.11: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+
+            <p class="terms-section-title">Section 1.12: Platform System Architecture Protocols</p>
+            <p>By executing interaction hooks within this sandboxed UI simulator framework layer, you consent to simulated legal ledger conditions. All mock distributions represent isolated browser memory instances.</p>
+            
+            <hr style="margin: 0.5rem 0; border: none; border-top: 1px solid #e5e7eb;">
+            <button id="close-terms-btn" class="primary-btn">Accept & Close Agreement</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const usersDatabase = {
+      jdoe: { password: 'password123', displayName: 'J.Doe', checking: 5000, savings: 10000 },
+      asmith: { password: 'smithPass456', displayName: 'A.Smith', checking: 1200, savings: 24000 },
+      rbrooks: { password: 'brooksSecure789', displayName: 'R.Brooks', checking: 8500, savings: 4500 }
+    };
+
+    let currentUserKey = null;
+    let checkingVal = 0;
+    let savingsVal = 0;
+
+    const globalHeader = document.getElementById('global-header');
+    const loginScreen = document.getElementById('login-screen');
+    const homeScreen = document.getElementById('home-screen');
+    const transferScreen = document.getElementById('transfer-screen');
+    const payScreen = document.getElementById('pay-screen');
+    const loanScreen = document.getElementById('loan-screen');
+    const termsScreen = document.getElementById('terms-screen');
+    const welcomeMessage = document.getElementById('welcome-message');
+
+    const checkingWrapper = document.getElementById('checking-wrapper');
+    const savingsWrapper = document.getElementById('savings-wrapper');
+    const checkingDisplay = document.getElementById('checking-display');
+    const savingsDisplay = document.getElementById('savings-display');
+    const visibilityFilter = document.getElementById('visibility-filter');
+    const ledgerBody = document.getElementById('ledger-body');
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('login-btn');
+    const loginError = document.getElementById('login-error');
+
+    const navTransferBtn = document.getElementById('nav-transfer-btn');
+    const navPayBtn = document.getElementById('nav-pay-btn');
+    const navLoanBtn = document.getElementById('nav-loan-btn');
+    const navTermsBtn = document.getElementById('nav-terms-btn');
+    const backToHomeBtns = document.querySelectorAll('.back-to-home-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    const executeTransferBtn = document.getElementById('execute-transfer-btn');
+    const transferStatus = document.getElementById('transfer-status');
+    const transferSpinner = document.getElementById('transfer-spinner');
+
+    const executePayBtn = document.getElementById('execute-pay-btn');
+    const paymentStatus = document.getElementById('payment-status');
+    const paySpinner = document.getElementById('pay-spinner');
+
+    const executeLoanBtn = document.getElementById('execute-loan-btn');
+    const loanStatus = document.getElementById('loan-status');
+    const loanSpinner = document.getElementById('loan-spinner');
+
+    const closeTermsBtn = document.getElementById('close-terms-btn');
+    const termsScrollContainer = document.getElementById('terms-scroll-container');
+
+    function updateUIBalances() {
+      checkingDisplay.innerText = "$" + checkingVal;
+      savingsDisplay.innerText = "$" + savingsVal;
+
+      const option = visibilityFilter.value;
+      if (option === 'both') {
+        checkingWrapper.style.display = 'flex';
+        savingsWrapper.style.display = 'flex';
+      } else if (option === 'checking') {
+        checkingWrapper.style.display = 'flex';
+        savingsWrapper.style.display = 'none';
+      } else if (option === 'savings') {
+        checkingWrapper.style.display = 'none';
+        savingsWrapper.style.display = 'flex';
+      } else if (option === 'none') {
+        checkingWrapper.style.display = 'none';
+        savingsWrapper.style.display = 'none';
+      }
+    }
+
+    visibilityFilter.onchange = updateUIBalances;
+
+    function addLedgerRow(type, description, amount, isPositive) {
+      const colorClass = isPositive ? 'text-positive' : 'text-negative';
+      const prefix = isPositive ? '+' : '-';
+      const rowhtml = `<tr>
+        <td style="padding: 0.75rem; font-weight: 600; color: #6b7280;">${type}</td>
+        <td style="padding: 0.75rem;">${description}</td>
+        <td class="${colorClass}" style="padding: 0.75rem;">${prefix}$${Math.abs(amount)}.00</td>
+      </tr>`;
+      ledgerBody.insertAdjacentHTML('afterbegin', rowhtml);
+    }
+
+    function showScreen(screenElement) {
+      homeScreen.style.display = 'none';
+      transferScreen.style.display = 'none';
+      payScreen.style.display = 'none';
+      loanScreen.style.display = 'none';
+      termsScreen.style.display = 'none';
+      screenElement.style.display = (screenElement === homeScreen) ? 'block' : 'flex';
+    }
+
+    loginBtn.onclick = () => {
+      const selectedUser = usernameInput.value.trim().toLowerCase();
+      const inputtedPassword = passwordInput.value;
+      
+      if (usersDatabase[selectedUser] && usersDatabase[selectedUser].password === inputtedPassword) {
+        currentUserKey = selectedUser;
+        checkingVal = usersDatabase[selectedUser].checking;
+        savingsVal = usersDatabase[selectedUser].savings;
+
+        welcomeMessage.innerText = `Hi, ${usersDatabase[selectedUser].displayName}`;
+        
+        ledgerBody.innerHTML = `<tr>
+          <td style="padding: 0.75rem; font-weight: 600; color: #2563eb;">SYSTEM</td>
+          <td style="padding: 0.75rem;">Profile Verification Context Initialized</td>
+          <td class="text-positive" style="padding: 0.75rem;">+$${checkingVal + savingsVal}.00</td>
+        </tr>`;
+
+        loginScreen.style.display = 'none';
+        globalHeader.style.display = 'block';
+        homeScreen.style.display = 'block';
+        loginError.style.display = 'none';
+        updateUIBalances();
+      } else {
+        loginError.style.display = 'block';
+      }
+    };
+
+    navTransferBtn.onclick = () => showScreen(transferScreen);
+    navPayBtn.onclick = () => showScreen(payScreen);
+    navLoanBtn.onclick = () => showScreen(loanScreen);
+    
+    navTermsBtn.onclick = () => {
+      showScreen(termsScreen);
+      termsScrollContainer.scrollTop = 0;
+    };
+    
+    closeTermsBtn.onclick = () => {
+      termsScreen.style.display = 'none';
+      homeScreen.style.display = 'block';
+    };
+    
+    backToHomeBtns.forEach(btn => {
+      btn.onclick = () => {
+        transferScreen.style.display = 'none';
+        payScreen.style.display = 'none';
+        loanScreen.style.display = 'none';
+        termsScreen.style.display = 'none';
+        homeScreen.style.display = 'block';
+        transferStatus.style.display = 'none';
+        paymentStatus.style.display = 'none';
+        loanStatus.style.display = 'none';
+      };
+    });
+
+    // Internal Transfer Logic
+    executeTransferBtn.onclick = () => {
+      const direction = document.getElementById('transfer-direction').value;
+      const amount = parseInt(document.getElementById('transfer-amount').value);
+      transferStatus.style.display = 'none';
+
+      if (!amount || amount <= 0) {
+        transferStatus.className = "status-badge status-error";
+        transferStatus.innerText = '❌ Validation Error: Please enter a positive amount.';
+        transferStatus.style.display = 'block';
+        return;
+      }
+
+      transferSpinner.style.display = 'flex';
+
+      setTimeout(() => {
+        transferSpinner.style.display = 'none';
+        
+        if (direction === 'c-to-s') {
+          if (checkingVal >= amount) {
+            checkingVal -= amount;
+            savingsVal += amount;
+            usersDatabase[currentUserKey].checking = checkingVal;
+            usersDatabase[currentUserKey].savings = savingsVal;
+            transferStatus.className = "status-badge status-blue";
+            transferStatus.innerText = `✅ Moved $${amount} from Checking to Savings`;
+            addLedgerRow('TRANSFER', 'Internal Checking to Savings', amount, false);
+            document.getElementById('transfer-amount').value = '';
+          } else {
+            transferStatus.className = "status-badge status-error";
+            transferStatus.innerText = '❌ Server Core Reject: Insufficient funds in Checking.';
+          }
+        } else {
+          if (savingsVal >= amount) {
+            savingsVal -= amount;
+            checkingVal += amount;
+            usersDatabase[currentUserKey].checking = checkingVal;
+            usersDatabase[currentUserKey].savings = savingsVal;
+            transferStatus.className = "status-badge status-blue";
+            transferStatus.innerText = `✅ Moved $${amount} from Savings to Checking`;
+            addLedgerRow('TRANSFER', 'Internal Savings to Checking', amount, true);
+            document.getElementById('transfer-amount').value = '';
+          } else {
+            transferStatus.className = "status-badge status-error";
+            transferStatus.innerText = '❌ Server Core Reject: Insufficient funds in Savings.';
+          }
+        }
+        transferStatus.style.display = 'block';
+        updateUIBalances();
+      }, 1500);
+    };
+
+    // Pay Anyone Logic
+    executePayBtn.onclick = () => {
+      const name = document.getElementById('ben-name').value.trim();
+      const amount = parseInt(document.getElementById('ben-amount').value);
+      paymentStatus.style.display = 'none';
+
+      if (!name || !amount || amount <= 0) {
+        paymentStatus.className = "status-badge status-error";
+        paymentStatus.innerText = '❌ Validation Error: Missing Name or valid Amount details.';
+        paymentStatus.style.display = 'block';
+        return;
+      }
+
+      paySpinner.style.display = 'flex';
+
+      setTimeout(() => {
+        paySpinner.style.display = 'none';
+        if (checkingVal >= amount) {
+          checkingVal -= amount;
+          usersDatabase[currentUserKey].checking = checkingVal;
+          paymentStatus.className = "status-badge status-success";
+          paymentStatus.innerText = `✅ Successfully cleared transaction to ${name} for $${amount}`;
+          addLedgerRow('PAYMENT', `Paid Beneficiary: ${name}`, amount, false);
+          document.getElementById('ben-name').value = '';
+          document.getElementById('ben-amount').value = '';
+        } else {
+          paymentStatus.className = "status-badge status-error";
+          paymentStatus.innerText = '❌ Risk Engine Block: Insufficient Checking balance limit.';
+        }
+        paymentStatus.style.display = 'block';
+        updateUIBalances();
+      }, 1800);
+    };
+
+    // Loan Allocation Logic
+    executeLoanBtn.onclick = () => {
+      loanStatus.style.display = 'none';
+      loanSpinner.style.display = 'flex';
+
+      setTimeout(() => {
+        loanSpinner.style.display = 'none';
+        const totalLiquidity = checkingVal + savingsVal;
+        
+        if (totalLiquidity > 15000) {
+          loanStatus.className = "status-badge status-error";
+          loanStatus.innerText = `❌ Underwriting Rejected: Cumulative network liquid capital ($${totalLiquidity}) exceeds the underwriting cap threshold of $15,000.`;
+        } else {
+          checkingVal += 5000;
+          usersDatabase[currentUserKey].checking = checkingVal;
+          loanStatus.className = "status-badge status-yellow";
+          loanStatus.innerText = "🎉 Loan approved! $5,000 added to checking.";
+          addLedgerRow('CREDIT', 'Commercial Cash Inject Loan Approved', 5000, true);
+        }
+        
+        loanStatus.style.display = 'block';
+        updateUIBalances();
+      }, 1200);
+    };
+
+    // Logout
+    logoutBtn.onclick = () => {
+      currentUserKey = null;
+      usernameInput.value = '';
+      passwordInput.value = '';
+      document.getElementById('transfer-amount').value = '';
+      document.getElementById('ben-name').value = '';
+      document.getElementById('ben-amount').value = '';
+      visibilityFilter.value = 'both';
+      globalHeader.style.display = 'none';
+      loginError.style.display = 'none';
+      homeScreen.style.display = 'none';
+      transferScreen.style.display = 'none';
+      payScreen.style.display = 'none';
+      loanScreen.style.display = 'none';
+      termsScreen.style.display = 'none';
+      loginScreen.style.display = 'block';
+    };
+  </script>
+</body>
+</html>
