@@ -9,4 +9,4 @@ jobs:
   build-deploy:
     uses: Simon-QA17/BankingApp-Tests/.github/workflows/github-actions-demo.yml@main
     with:
-          node-version: '22'
+          node-version: '24'
