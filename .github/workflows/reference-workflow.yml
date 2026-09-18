@@ -1,0 +1,12 @@
+name: Banking App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    uses: Simon-QA17/BankingApp-Tests/.github/workflows/github-actions-demo.yml@main
+    with:
+          node-version: '18'
