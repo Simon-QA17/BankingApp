@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-deploy:
+  test:
     uses: Simon-QA17/BankingApp-Tests/.github/workflows/github-actions-demo.yml@main
     with:
           node-version: '24'
