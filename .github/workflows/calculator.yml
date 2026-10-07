@@ -1,0 +1,26 @@
+name: Playwright Test Pipeline
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          npm install -D @playwright/test
+          npx playwright install chromium
+
+      - name: Start Local Server
+        # This serves your HTML file on port 8080 in the background
+        run: npx serve . -l 8080 &
+
+      - name: Run Playwright Tests
+        run: npx playwright test
