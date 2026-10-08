@@ -6,4 +6,5 @@ on:
 
 jobs:
   Bank-Test: 
-    uses: Simon-QA17/Github_Actions_Manual/./.github/workflows/demo.yml@main
+    uses: Simon-QA17/Github_Actions_Manual/./.github/workflows/calculator.yml@main
+    
