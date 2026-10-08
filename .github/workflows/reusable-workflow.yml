@@ -5,5 +5,5 @@ on:
     branches: [ main ]
 
 jobs:
-  Bank-Test:
+  Bank-Test: 
     uses: Simon-QA17/Github_Actions_Manual/./.github/workflows/demo.yml@main
