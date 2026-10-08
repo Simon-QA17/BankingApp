@@ -3,7 +3,7 @@ name: Playwright Test Pipeline
 on: [push]
 
 jobs:
-  test:
+  run_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,3 +24,10 @@ jobs:
 
       - name: Run Playwright Tests
         run: npx playwright test
+
+  status:
+    runs-on: ubuntu-latest
+    needs: run_tests
+    steps:
+      - name: Dependent_Job
+        run: echo "run_tests"
