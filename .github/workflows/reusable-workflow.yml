@@ -5,6 +5,12 @@ on:
     branches: [ main ]
 
 jobs:
-  Bank-Test: 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+  
+  Bank-Test:
+    needs: test
     uses: Simon-QA17/Github_Actions_Manual/.github/workflows/calculator.yml@main
     
